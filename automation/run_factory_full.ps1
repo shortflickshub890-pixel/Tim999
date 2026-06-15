@@ -20,7 +20,17 @@ param(
     [switch]$CreatePr,
     [string]$GitBranch = "master",
     [string]$GitRemote = "origin",
-    [string]$GitHubBaseBranch = "main"
+    [string]$GitHubBaseBranch = "main",
+    [switch]$CreateMontage,
+    [string]$SourceVideo = "",
+    [string]$SceneTimingsFile = "",
+    [string]$MusicFile = "",
+    [string]$MusicDir = "assets/music",
+    [int]$MaxScenes = 4,
+    [int]$MaxClipSeconds = 12,
+    [int]$MinMontageSeconds = 30,
+    [int]$MaxMontageSeconds = 45,
+    [string]$MontageOutputName = "montage.mp4"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -54,6 +64,13 @@ Write-Host "GitHubRelease: $GitHubRelease"
 Write-Host "S3Bucket:     $S3Bucket"
 Write-Host "GitCommitPush: $GitCommitPush"
 Write-Host "CreatePr:     $CreatePr"
+Write-Host "CreateMontage: $CreateMontage"
+if ($CreateMontage) {
+    Write-Host "  SourceVideo:     $SourceVideo"
+    Write-Host "  MaxScenes:       $MaxScenes"
+    Write-Host "  ClipDuration:    $MaxClipSeconds sec"
+    Write-Host "  MontageLength:   $MinMontageSeconds-$MaxMontageSeconds sec"
+}
 Write-Host ""
 
 if (-not (Test-Path $CaptionsFile)) {
@@ -71,9 +88,39 @@ New-Item -ItemType Directory -Path $PublishDir -Force | Out-Null
 
 $factoryScript = Join-Path $root 'factory\run_factory.ps1'
 $publishScript = Join-Path $PSScriptRoot 'publish.ps1'
+$montageScript = Join-Path $PSScriptRoot 'create_montage.ps1'
 
 Write-Host "Starting video generation..."
 & pwsh -NoProfile -ExecutionPolicy Bypass -File $factoryScript -CaptionsFile $CaptionsFile -ImagesDir $ImagesDir -OutDir $OutDir -Voice $Voice
+
+if ($CreateMontage) {
+    if (-not $SourceVideo) {
+        Write-Error "SourceVideo parameter is required for montage creation. Specify -SourceVideo with path to your video file."
+        exit 1
+    }
+    $SourceVideoPath = [System.IO.Path]::GetFullPath((Join-Path $root $SourceVideo))
+    if (-not (Test-Path $SourceVideoPath)) {
+        Write-Error "Source video not found: $SourceVideoPath"
+        exit 1
+    }
+    Write-Host ""
+    Write-Host "Creating montage from source video..."
+    $montageArgs = @(
+        '-SourceVideo', $SourceVideoPath,
+        '-OutputDir', $OutDir,
+        '-OutputName', $MontageOutputName,
+        '-MaxScenes', $MaxScenes,
+        '-MaxClipSeconds', $MaxClipSeconds,
+        '-MinTotalSeconds', $MinMontageSeconds,
+        '-MaxTotalSeconds', $MaxMontageSeconds,
+        '-MusicDir', $MusicDir
+    )
+    if ($SceneTimingsFile) { $montageArgs += '-SceneTimingsFile'; $montageArgs += $SceneTimingsFile }
+    if ($MusicFile) { $montageArgs += '-MusicFile'; $montageArgs += $MusicFile }
+    
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $montageScript @montageArgs
+    Write-Host "Montage creation complete."
+}
 
 if (-not $SkipPublish) {
     Write-Host "Publishing generated videos..."
