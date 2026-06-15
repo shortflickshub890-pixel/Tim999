@@ -7,10 +7,28 @@ Requirements
 
 Quick usage
 
-- Run the full automated pipeline (recommended):
+- Run the full automated pipeline with explicit options (recommended):
 
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1 -CaptionsFile "assets/images/captions/001_storyboard.txt" -ImagesDir "assets/images/001_interstellar" -Voice "en-US-GuyNeural"
+```
+
+- Run the full pipeline and publish to GitHub Releases:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1 -GitHubRelease -GitHubRepo "shortflickshub890-pixel/Tim999" -GitHubToken "<token>" -GitHubTag "v1.0.0" -ReleaseName "AI Movie Factory Release"
+```
+
+- Run the full pipeline and publish to S3:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1 -S3Bucket "my-bucket" -S3Prefix "movie-factory"
+```
+
+- Run the full pipeline, commit and push changes, and create a PR:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1 -GitCommitPush -CreatePr -GitHubToken "<token>" -GitHubRepo "shortflickshub890-pixel/Tim999"
 ```
 
 - Generate videos from captions and images manually:
@@ -40,5 +58,7 @@ pwsh .\automation\publish.ps1 -Source .\output -Dest .\publish -Move  # moves
 
 Notes
 - `automation/run_factory_full.ps1` runs the full pipeline end-to-end: generation + publish.
-- `run_factory.ps1` will try `edge-tts` first and fall back to System.Speech if needed.
+- It accepts `-CaptionsFile` and `-Voice` explicitly to minimize manual edits.
+- `automation/publish.ps1` can publish locally, to GitHub Releases, or to AWS S3.
+- `automation/run_factory_full.ps1` also supports `-GitCommitPush` and `-CreatePr` for auto versioning and PR creation.
 - Backups of modified scripts are in the `backups/` folder.
