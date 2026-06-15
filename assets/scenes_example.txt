@@ -1,0 +1,15 @@
+# Scene Timings Example
+# Format: START_TIME-END_TIME | CAPTION
+# Times can be: MM:SS, M:SS, or HH:MM:SS
+# Captions are optional
+
+# Example: Movie highlight montage with 3-4 key scenes
+0:05-0:20|Dramatic opening
+1:15-1:35|Plot twist moment
+3:45-4:10|Climactic action
+5:20-5:40|Emotional finale
+
+# Instructions:
+# 1. Fill in the actual timecodes from your source video
+# 2. Add captions that will be displayed as subtitles in the final montage
+# 3. Use this file with: -SceneTimingsFile ".\assets\scenes_custom.txt"
