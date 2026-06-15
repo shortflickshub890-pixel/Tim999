@@ -1,0 +1,7 @@
+1 video per day
+Maximum 40 sec
+English only
+One idea per video
+Review before publish
+Never publish automatically
+Review manually

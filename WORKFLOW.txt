@@ -1,0 +1,10 @@
+MOVIE FACTORY WORKFLOW
+
+1. Select topic
+2. Create script
+3. Prepare captions
+4. Prepare visual package
+5. Render
+6. Review
+7. Publish
+8. Collect analytics

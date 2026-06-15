@@ -1,0 +1,8 @@
+[OK] Docker installed
+[OK] VS Code installed
+[OK] First script created
+[OK] Render task prepared
+[OK] Queue prepared
+[OK] First video package created
+[OK] Storyboard created
+[OK] First video prepared

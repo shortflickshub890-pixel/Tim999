@@ -1,0 +1,13 @@
+# 1) Генерация голоса
+powershell -ExecutionPolicy Bypass -File C:\AI_MOVIE_FACTORY\scripts\tts.ps1
+
+# 2) Рендер видео
+ffmpeg -y `
+-loop 1 -framerate 25 `
+-i C:\AI_MOVIE_FACTORY\assets\images\001_interstellar\bg_001.jpg `
+-i C:\AI_MOVIE_FACTORY\renders\voice.mp3 `
+-vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p,drawbox=x=0:y=0:w=iw:h=ih:color=black@0.25:t=fill" `
+-c:v libx264 -pix_fmt yuv420p `
+-c:a aac -b:a 192k `
+-shortest `
+C:\AI_MOVIE_FACTORY\renders\final_factory.mp4

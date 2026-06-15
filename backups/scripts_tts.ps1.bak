@@ -1,0 +1,7 @@
+param(
+  [string]$text = "You missed this. Interstellar is not about space. It's about time."
+)
+
+$out = "C:\AI_MOVIE_FACTORY\renders\voice.mp3"
+
+edge-tts --text "$text" --voice en-US-GuyNeural --write-media $out

@@ -1,0 +1,14 @@
+0–2 sec
+HOOK
+
+2–8 sec
+SHOW IDEA
+
+8–22 sec
+EXPLAIN
+
+22–35 sec
+PAYOFF
+
+35–40 sec
+QUESTION

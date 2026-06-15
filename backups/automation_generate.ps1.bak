@@ -1,0 +1,10 @@
+Write-Host ""
+Write-Host "MOVIE FACTORY"
+Write-Host ""
+
+$root = Split-Path $PSScriptRoot -Parent
+
+Get-ChildItem "$root\ideas"
+
+Write-Host ""
+Write-Host "IDEAS READY"

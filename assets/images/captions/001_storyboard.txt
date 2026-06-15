@@ -1,0 +1,42 @@
+SCENE 1 (0–2)
+TEXT:
+Most people missed this.
+
+CAMERA:
+Fast intro
+
+—
+
+SCENE 2 (2–8)
+TEXT:
+Interstellar looks like a movie about space.
+
+CAMERA:
+Slow zoom
+
+—
+
+SCENE 3 (8–18)
+TEXT:
+But it is actually about time.
+
+CAMERA:
+Cut
+
+—
+
+SCENE 4 (18–30)
+TEXT:
+That changes the ending.
+
+CAMERA:
+Fade
+
+—
+
+SCENE 5 (30–35)
+TEXT:
+Would you notice it?
+
+CAMERA:
+End

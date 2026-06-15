@@ -1,0 +1,22 @@
+VIDEO_ID: 001
+
+MOVIE:
+Interstellar
+
+TYPE:
+Hidden Detail
+
+TARGET:
+Movie fans
+
+LENGTH:
+35 sec
+
+HOOK:
+Most people missed this.
+
+GOAL:
+High retention
+
+OUTPUT:
+Shorts

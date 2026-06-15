@@ -1,0 +1,84 @@
+VIDEO: 001
+
+TITLE:
+Most people missed this in Interstellar
+
+TOTAL:
+35 sec
+
+SCENE 1
+TIME:
+0–2
+
+VOICE:
+Wait. Did you notice this?
+
+TEXT:
+Most people missed this.
+
+EDIT:
+Fast cut
+
+—
+
+SCENE 2
+TIME:
+2–8
+
+VOICE:
+Interstellar looks like a movie about space.
+
+TEXT:
+Looks like space.
+
+EDIT:
+Quick zoom
+
+—
+
+SCENE 3
+TIME:
+8–18
+
+VOICE:
+But the story quietly focuses on something else.
+
+TEXT:
+It’s about time.
+
+EDIT:
+Speed increase
+
+—
+
+SCENE 4
+TIME:
+18–30
+
+VOICE:
+That changes how the ending feels.
+
+TEXT:
+Watch again.
+
+EDIT:
+Glow transition
+
+—
+
+SCENE 5
+TIME:
+30–35
+
+VOICE:
+Would you notice it now?
+
+TEXT:
+Comment your answer.
+
+EDIT:
+Hard stop
+
+
+
+

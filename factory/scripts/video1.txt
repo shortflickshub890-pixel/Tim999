@@ -1,0 +1,2 @@
+TEXT=YOU MISSED THIS|INTERSTELLAR IS NOT ABOUT SPACE|ITS ABOUT TIME
+VOICE=Interstellar is not about space. It is about time.

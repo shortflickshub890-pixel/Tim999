@@ -1,0 +1,59 @@
+VIDEO: 001
+
+SCENE 1
+TIME:
+0–2
+
+TYPE:
+TEXT + IMPACT
+
+TEXT:
+Most people missed this.
+
+—
+
+SCENE 2
+TIME:
+2–8
+
+TYPE:
+BACKGROUND + TEXT
+
+TEXT:
+Looks like space.
+
+—
+
+SCENE 3
+TIME:
+8–18
+
+TYPE:
+EMPHASIS
+
+TEXT:
+It’s about time.
+
+—
+
+SCENE 4
+TIME:
+18–30
+
+TYPE:
+REVEAL
+
+TEXT:
+Watch again.
+
+—
+
+SCENE 5
+TIME:
+30–35
+
+TYPE:
+CTA
+
+TEXT:
+Would you notice it?

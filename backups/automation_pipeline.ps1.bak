@@ -1,0 +1,30 @@
+Write-Host ""
+Write-Host "MOVIE FACTORY PIPELINE"
+Write-Host ""
+
+$root = Split-Path $PSScriptRoot -Parent
+
+Write-Host "Checking folders..."
+
+$folders = @(
+"ideas",
+"scripts",
+"voice",
+"assets",
+"publish"
+)
+
+foreach ($f in $folders)
+{
+ if(Test-Path "$root\$f")
+ {
+   Write-Host "[OK] $f"
+ }
+ else
+ {
+   Write-Host "[MISSING] $f"
+ }
+}
+
+Write-Host ""
+Write-Host "PIPELINE READY"

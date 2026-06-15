@@ -1,0 +1,107 @@
+param(
+    [string]$CaptionsFile = ".\factory\captions.txt",
+    [string]$ImagesDir = ".\assets\images\001_interstellar",
+    [string]$OutDir = ".\output",
+    [string]$Voice = "en-US-GuyNeural",
+    [int]$Width = 1080,
+    [int]$Height = 1920
+)
+
+$ErrorActionPreference = 'Stop'
+
+if (-not (Test-Path $CaptionsFile)) {
+    Write-Error "Captions file not found: $CaptionsFile"
+    exit 1
+}
+
+if (-not (Test-Path $ImagesDir)) {
+    Write-Error "Images directory not found: $ImagesDir"
+    exit 1
+}
+
+New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
+
+$rows = Get-Content -Path $CaptionsFile -ErrorAction Stop
+$images = Get-ChildItem -Path $ImagesDir -File | Where-Object { $_.Extension -match '(?i)\.(jpg|jpeg|png|webp|bmp|gif)$' } | Sort-Object Name
+if ($images.Count -eq 0) {
+    Write-Error "No images found in $ImagesDir"
+    exit 1
+}
+
+# Build list of texts from captions file. Support pipe-format and block-format with 'TEXT:' markers.
+$texts = @()
+$idx = 0
+while ($idx -lt $rows.Count) {
+    $line = $rows[$idx].Trim()
+    if ($line -eq '') { $idx++; continue }
+    if ($line -match '\|') {
+        $parts = $line -split '\|'
+        if ($parts.Count -ge 2) { $texts += $parts[1].Trim() }
+        else { $texts += $parts[0].Trim() }
+        $idx++; continue
+    }
+    if ($line -match '^TEXT:\s*$') {
+        if ($idx + 1 -lt $rows.Count) {
+            $candidate = $rows[$idx + 1].Trim()
+            if ($candidate -ne '') { $texts += $candidate }
+            $idx += 2; continue
+        }
+    }
+    if ($line -notmatch '^(SCENE|CAMERA|—|-{2,})') { $texts += $line }
+    $idx++
+}
+
+$i = 1
+foreach ($text in $texts) {
+    if ([string]::IsNullOrWhiteSpace($text)) { continue }
+
+    $image = $images[($i - 1) % $images.Count].FullName
+
+    $edgeMp3 = Join-Path $OutDir "voice_$i.mp3"
+    $voiceWav = Join-Path $OutDir "voice_$i.wav"
+    $video = Join-Path $OutDir "video_$i.mp4"
+
+    $edgeMp3 = [System.IO.Path]::GetFullPath($edgeMp3)
+    $voiceWav = [System.IO.Path]::GetFullPath($voiceWav)
+    $video = [System.IO.Path]::GetFullPath($video)
+    $image = [System.IO.Path]::GetFullPath($image)
+
+    Write-Host ""
+    Write-Host "VIDEO $i"
+    Write-Host "IMAGE -> $image"
+    Write-Host "TEXT  -> $text"
+
+    $edgeArgs = @("--text=$text", "--voice=$Voice", "--write-media=$edgeMp3")
+    $audio = $null
+    try {
+        & py -m edge_tts @edgeArgs
+        if (Test-Path $edgeMp3) { $audio = $edgeMp3 }
+    } catch {
+        Write-Warning "edge_tts failed for item ${i}: $_. Falling back to System.Speech."
+    }
+
+    if (-not $audio) {
+        try {
+            Add-Type -AssemblyName System.Speech -ErrorAction Stop
+            $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer
+            $synth.SetOutputToWaveFile($voiceWav)
+            $synth.Speak($text)
+            $synth.Dispose()
+            if (Test-Path $voiceWav) { $audio = $voiceWav }
+        } catch {
+            Write-Error "Fallback TTS generation failed for item ${i}: $_"
+            continue
+        }
+    }
+
+    $vf = "scale=${Width}:${Height}:force_original_aspect_ratio=increase,crop=${Width}:${Height}"
+    $ffmpegArgs = @('-y','-loop','1','-i',$image,'-i',$audio,'-vf',$vf,'-map','0:v','-map','1:a','-c:v','libx264','-c:a','aac','-shortest',$video)
+    try {
+        & ffmpeg @ffmpegArgs
+    } catch {
+        Write-Error "ffmpeg failed for item ${i}: $_"
+        continue
+    }
+
+    $i++
+}
