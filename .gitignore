@@ -1,0 +1,9 @@
+# Generated and rendered files
+output/
+renders/
+VIDEOS/
+factory/outputs/
+*.mp4
+*.mp3
+*.wav
+patches.zip
