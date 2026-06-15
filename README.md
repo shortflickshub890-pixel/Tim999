@@ -7,7 +7,13 @@ Requirements
 
 Quick usage
 
-- Generate videos from captions and images:
+- Run the full automated pipeline (recommended):
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1
+```
+
+- Generate videos from captions and images manually:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\factory\run_factory.ps1 -CaptionsFile .\assets\images\captions\001_storyboard.txt -ImagesDir .\assets\images\001_interstellar -OutDir .\output -Voice en-US-GuyNeural
@@ -33,5 +39,6 @@ pwsh .\automation\publish.ps1 -Source .\output -Dest .\publish -Move  # moves
 ```
 
 Notes
+- `automation/run_factory_full.ps1` runs the full pipeline end-to-end: generation + publish.
 - `run_factory.ps1` will try `edge-tts` first and fall back to System.Speech if needed.
 - Backups of modified scripts are in the `backups/` folder.
