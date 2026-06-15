@@ -20,11 +20,27 @@ param(
     [switch]$CreatePr,
     [string]$GitBranch = "master",
     [string]$GitRemote = "origin",
-    [string]$GitHubBaseBranch = "main"
+    [string]$GitHubBaseBranch = ""
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+
+function Get-GitHubDefaultBranch {
+    param(
+        [string]$RepoName,
+        [string]$Token
+    )
+    if (-not $RepoName -or -not $Token) { return $null }
+    $headers = @{ Authorization = "token $Token"; Accept = 'application/vnd.github+json'; 'User-Agent' = 'AI Movie Factory' }
+    try {
+        $repoInfo = Invoke-RestMethod -Uri "https://api.github.com/repos/$RepoName" -Method Get -Headers $headers -ErrorAction Stop
+        return $repoInfo.default_branch
+    } catch {
+        Write-Warning "Unable to determine repository default branch: $_"
+        return $null
+    }
+}
 
 $CaptionsFile = [System.IO.Path]::GetFullPath((Join-Path $root $CaptionsFile))
 $ImagesDir = [System.IO.Path]::GetFullPath((Join-Path $root $ImagesDir))
@@ -117,17 +133,27 @@ if ($CreatePr) {
         if (-not $repoName) {
             Write-Warning "Cannot determine GitHub repo from remote. Set -GitHubRepo explicitly."
         } else {
-            $prBranch = "autopr/$(Get-Date -Format 'yyyyMMddHHmmss')"
-            Write-Host "Creating branch $prBranch and pushing to remote..."
-            try {
-                & git -C $root checkout -b $prBranch
-                & git -C $root push -u $GitRemote $prBranch
-                $prData = @{ title = "Auto PR from AI Movie Factory"; head = $prBranch; base = $GitHubBaseBranch; body = "Auto-generated PR for newly published assets." }
-                $headers = @{ Authorization = "token $GitHubToken"; Accept = 'application/vnd.github+json'; 'User-Agent' = 'AI Movie Factory' }
-                $prResponse = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoName/pulls" -Method Post -Headers $headers -Body ($prData | ConvertTo-Json)
-                Write-Host "PR created: $($prResponse.html_url)"
-            } catch {
-                Write-Warning "Failed to create PR: $_"
+            $baseBranch = $GitHubBaseBranch
+            if (-not $baseBranch) {
+                $baseBranch = Get-GitHubDefaultBranch -RepoName $repoName -Token $GitHubToken
+                if (-not $baseBranch) {
+                    Write-Warning "Unable to determine base branch. Specify -GitHubBaseBranch explicitly."
+                }
+            }
+
+            if ($baseBranch) {
+                $prBranch = "autopr/$(Get-Date -Format 'yyyyMMddHHmmss')"
+                Write-Host "Creating branch $prBranch and pushing to remote..."
+                try {
+                    & git -C $root checkout -b $prBranch
+                    & git -C $root push -u $GitRemote $prBranch
+                    $prData = @{ title = "Auto PR from AI Movie Factory"; head = $prBranch; base = $baseBranch; body = "Auto-generated PR for newly published assets." }
+                    $headers = @{ Authorization = "token $GitHubToken"; Accept = 'application/vnd.github+json'; 'User-Agent' = 'AI Movie Factory' }
+                    $prResponse = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoName/pulls" -Method Post -Headers $headers -Body ($prData | ConvertTo-Json)
+                    Write-Host "PR created: $($prResponse.html_url)"
+                } catch {
+                    Write-Warning "Failed to create PR: $_"
+                }
             }
         }
     }

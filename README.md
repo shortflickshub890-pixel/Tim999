@@ -31,6 +31,12 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1 
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\automation\run_factory_full.ps1 -GitCommitPush -CreatePr -GitHubToken "<token>" -GitHubRepo "shortflickshub890-pixel/Tim999"
 ```
 
+- If your repository uses a different default branch name (for example `master`), add:
+
+```powershell
+-GitHubBaseBranch "master"
+```
+
 - Generate videos from captions and images manually:
 
 ```powershell
